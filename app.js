@@ -2,73 +2,88 @@ document.addEventListener('DOMContentLoaded', function () {
     loadTasks();
     const addButton = document.getElementById('btn_add');
     addButton.addEventListener('click', addTask);
-  });
-  
-  function loadTasks() {
-    // Servidor para obtener las tareas desde la base de datos
-    
+});
+
+function loadTasks() {
+    // Simular la obtención de tareas desde la base de datos
     const tasks = [];
-  
+
     const app = document.getElementById('app');
-    //app.innerHTML = '<h1>Contador de Tareas</h1>';
-  
+
     tasks.forEach(task => {
-      createTaskContainer(task);
+        createTaskContainer(task);
     });
-  }
-  
-  function addTask() {
+}
+
+function addTask() {
     const taskInput = document.getElementById('taskInput');
-    const newTaskTitle = taskInput.value;
-  
-    if (newTaskTitle.trim() !== '') {
-      const newTask = { title: newTaskTitle, count: 0 };
-      createTaskContainer(newTask);
-  
-      // Solicitud al servidor para agregar la tarea a la base de datos
-  
-      // Limpiar el campo de entrada después de agregar la tarea
-      taskInput.value = '';
+    const newTaskTitle = taskInput.value.trim();
+
+    if (newTaskTitle !== '') {
+        const newTask = { id: Date.now(), title: newTaskTitle, count: 0 };
+        createTaskContainer(newTask);
+
+        // Limpiar el campo de entrada después de agregar la tarea
+        taskInput.value = '';
     }
-  }
-  
-  function createTaskContainer(task) {
+}
+
+function createTaskContainer(task) {
     const app = document.getElementById('app');
     const container = document.createElement('div');
-    container.classList.add('task-container'); // Agregar clase para los estilos
-    
-  
-    const button = document.createElement('button');
-    button.textContent = task.title;
-    button.classList.add('task_btn');
-    button.onclick = () => incrementCount(task, countElement);
-  
+    container.classList.add('task-container');
+    container.dataset.id = task.id;
+
+    const titleElement = document.createElement('input');
+    titleElement.type = 'text';
+    titleElement.value = task.title;
+    titleElement.classList.add('task-title');
+    titleElement.disabled = true;
+
     const countElement = document.createElement('span');
     countElement.textContent = task.count;
-    countElement.style.marginRight = '5px'; 
-  
+    countElement.classList.add('task-count');
+
+    const countButton = document.createElement('button');
+    countButton.textContent = 'Contar';
+    countButton.classList.add('count-btn');
+    countButton.onclick = () => incrementCount(task, countElement);
+
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Editar';
+    editButton.classList.add('edit-btn');
+    editButton.onclick = () => toggleEdit(task.id, titleElement, editButton);
+
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'X';
-    deleteButton.classList.add('deleteButton');
-    //deleteButton.style.marginRight = '5px';
-    deleteButton.onclick = () => deleteTask(container);
-  
-    container.appendChild(button);
+    deleteButton.classList.add('delete-btn');
+    deleteButton.onclick = () => deleteTask(task.id);
+
+    container.appendChild(titleElement);
     container.appendChild(countElement);
+    container.appendChild(countButton);
+    container.appendChild(editButton);
     container.appendChild(deleteButton);
     app.appendChild(container);
-  }
-  
-  function incrementCount(task, countElement) {
+}
+
+function toggleEdit(taskId, titleElement, editButton) {
+    titleElement.disabled = !titleElement.disabled;
+    titleElement.focus();
+
+    if (!titleElement.disabled) {
+        editButton.textContent = 'Guardar';
+    } else {
+        editButton.textContent = 'Editar';
+    }
+}
+
+function incrementCount(task, countElement) {
     task.count++;
-    // Actualizar el texto con el nuevo conteo
     countElement.textContent = task.count;
-    // Solicitud al servidor para actualizar la tarea en la base de datos
-  }
-  
-  function deleteTask(container) {
-    const app = document.getElementById('app');
-    app.removeChild(container);
-    // Solicitud al servidor para eliminar la tarea de la base de datos
-  }
-  
+}
+
+function deleteTask(taskId) {
+    const taskElement = document.querySelector(`.task-container[data-id="${taskId}"]`);
+    taskElement.remove();
+}
