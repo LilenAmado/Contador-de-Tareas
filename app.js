@@ -36,9 +36,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const app = document.getElementById('app');
     const container = document.createElement('div');
     container.classList.add('task-container'); // Agregar clase para los estilos
+    
   
     const button = document.createElement('button');
     button.textContent = task.title;
+    button.classList.add('task_btn');
     button.onclick = () => incrementCount(task, countElement);
   
     const countElement = document.createElement('span');
@@ -47,6 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
   
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'X';
+    deleteButton.classList.add('deleteButton');
+    //deleteButton.style.marginRight = '5px';
     deleteButton.onclick = () => deleteTask(container);
   
     container.appendChild(button);
